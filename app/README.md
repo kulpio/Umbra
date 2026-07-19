@@ -43,27 +43,43 @@ Marketing waitlist site remains at repo root (GitHub Pages). This app is primari
 | Server | No Umbra backend receives message bodies |
 | Revoke | Deep link only — we do not call revoke APIs |
 
-### Google Cloud (Testing mode)
+### Google Cloud (Testing mode) — **Umbra project only**
 
-1. Create a Google Cloud project (e.g. “Umbra”).  
-2. **APIs & Services → Enable Gmail API**.  
+**Hard rule:** create a **new** Google Cloud project named **Umbra**.  
+Do **not** reuse Natandi, SynergyApp, Boreal, or any other existing GCP project. Wrong project = wrong OAuth client and cross-product mess.
+
+1. Open **Create project**: https://console.cloud.google.com/projectcreate  
+   - Project name: `Umbra`  
+   - Confirm the top bar project picker says **Umbra** (not Natandi) before any next step.  
+2. With **Umbra** selected → enable **Gmail API**:  
+   https://console.cloud.google.com/apis/library/gmail.googleapis.com  
 3. **OAuth consent screen**: External → **Testing**.  
-4. Scopes: `https://www.googleapis.com/auth/gmail.readonly` (and openid/email if prompted).  
-5. **Credentials → Create OAuth client ID → Web application**.  
-6. Authorized JavaScript origins: `http://localhost:5173`  
-7. Add your Google account under **Test users**.  
-8. Copy Client ID into env:
+4. Scopes: only `https://www.googleapis.com/auth/gmail.readonly` (openid/email OK if wizard adds them).  
+5. **Test users**: add your Gmail.  
+6. **Credentials → Create OAuth client ID → Web application**  
+   - Name: `Umbra local`  
+   - Authorized JavaScript origins: `http://localhost:5173` and `http://127.0.0.1:5173`  
+7. Copy **that** client’s ID into env (Umbra app only — never into Natandi repos):
 
 ```bash
+cd /Users/dylandemnard/Personal/Projects/Umbra/app
 cp .env.example .env.local
-# edit:
+# edit app/.env.local only:
 # VITE_GOOGLE_CLIENT_ID=xxxxx.apps.googleusercontent.com
 ```
 
-9. Restart `npm run dev`. **Connect Google** → **Live Gmail scan**.
+8. Restart `npm run dev` from **Umbra/app**. **Connect Google** → **Live Gmail scan**.
 
-Without `VITE_GOOGLE_CLIENT_ID`, Connect stays disabled and setup copy points here. Demo still works.
+Without `VITE_GOOGLE_CLIENT_ID`, Connect stays disabled. Demo still works.
 
+**Isolation checklist**
+
+| | Umbra | Natandi |
+|--|-------|---------|
+| Code | `Personal/Projects/Umbra` | `Personal/Projects/SynergyApp` |
+| GCP project | **Umbra** (new) | whatever Natandi already uses |
+| `.env.local` | `Umbra/app/.env.local` | Natandi env files only |
+| OAuth client name | `Umbra local` | never share clients |
 ### Production verification
 
 Not in v0. Stay on Testing + ≤100 test users until CASA/verification is planned (see vault research).
