@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Umbra — Find what’s still leeching you</title>
+  <meta name="description" content="Early access waitlist. Hunt zombie subscriptions, forgotten app logins, and over-permissioned AI. No inbox scan yet." />
+  <meta name="theme-color" content="#0c0e12" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; form-action 'self' https://formsubmit.co; img-src 'self' data:; script-src 'self'; style-src 'self'; connect-src 'self' https://formsubmit.co" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect fill='%230c0e12' width='32' height='32'/><text x='16' y='22' text-anchor='middle' fill='%23e8c547' font-size='18' font-family='system-ui'>U</text></svg>" />
+</head>
+<body>
+  <a class="skip" href="#waitlist">Skip to waitlist</a>
+
+  <header class="top">
+    <div class="wrap top-inner">
+      <a class="wordmark" href="./" aria-label="Umbra home">Umbra</a>
+      <span class="codename">codename</span>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero wrap">
+      <p class="eyebrow">Leech-hunt · early access</p>
+      <h1 id="hero-headline">Find every subscription still draining you — even the ones you forgot.</h1>
+      <p id="hero-subhead" class="subhead">
+        Forgotten trials. Zombie gyms. Apps that charge quiet. Get on the list for the scan that hunts money leeches first.
+      </p>
+      <p class="hero-actions">
+        <a class="btn btn-primary" href="#waitlist" id="hero-cta">Get early access</a>
+      </p>
+      <nav class="angle-nav" aria-label="Pitch angles">
+        <span class="angle-label">Angle:</span>
+        <a href="?v=money" data-v="money" class="angle-link is-active">Money</a>
+        <a href="?v=oauth" data-v="oauth" class="angle-link">Logins</a>
+        <a href="?v=ai" data-v="ai" class="angle-link">AI</a>
+      </nav>
+    </section>
+
+    <section class="section wrap" aria-labelledby="find-heading">
+      <h2 id="find-heading">What the scan will find</h2>
+      <ul id="hero-bullets" class="bullets">
+        <li>Recurring charges you stopped using but never canceled</li>
+        <li>Free trials that flipped to paid while you weren’t looking</li>
+        <li>Receipts and renewals buried in years of email — not just what your bank app surfaces today</li>
+      </ul>
+    </section>
+
+    <section class="section wrap" aria-labelledby="how-heading">
+      <h2 id="how-heading">How it works</h2>
+      <ol class="steps">
+        <li>
+          <strong>Join the waitlist</strong>
+          <span>You’re early. We build in public.</span>
+        </li>
+        <li>
+          <strong>When alpha opens</strong>
+          <span>Connect Gmail with <em>read-only</em> access. The scan is designed to run <em>on your device</em> — not as a mail honeypot.</span>
+        </li>
+        <li>
+          <strong>See the leeches</strong>
+          <span>Forgotten charges, zombie apps, over-permissioned AI — plus guided links to shut them off.</span>
+        </li>
+      </ol>
+      <p class="note">No live inbox scan on this page. Waitlist only.</p>
+    </section>
+
+    <section class="section wrap proof" aria-labelledby="proof-heading">
+      <h2 id="proof-heading" class="visually-hidden">Who it’s for</h2>
+      <p class="proof-line">
+        Built for people drowning in subscriptions, forgotten OAuth, and AI apps that took more access than they needed.
+      </p>
+    </section>
+
+    <section class="section wrap waitlist-section" id="waitlist" aria-labelledby="waitlist-heading">
+      <h2 id="waitlist-heading">Join the waitlist</h2>
+      <p class="form-micro" id="form-micro">
+        Early access waitlist only. No inbox scan yet — we’ll email when alpha opens.
+        No spam. Unsubscribe anytime.
+      </p>
+
+      <form id="waitlist-form" class="waitlist-form" novalidate>
+        <!-- FormSubmit fields also set in JS JSON body -->
+        <input type="hidden" name="_subject" value="Umbra waitlist" />
+        <input type="hidden" name="_template" value="table" />
+        <input type="hidden" name="_captcha" value="false" />
+        <input type="text" name="_honey" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
+
+        <label class="field">
+          <span>Email</span>
+          <input
+            type="email"
+            name="email"
+            id="email"
+            required
+            autocomplete="email"
+            inputmode="email"
+            placeholder="you@example.com"
+          />
+        </label>
+
+        <fieldset class="field fieldset">
+          <legend>I’m most annoyed by <span class="opt">(optional)</span></legend>
+          <label class="radio"><input type="radio" name="preference" value="money" /> Money / subs</label>
+          <label class="radio"><input type="radio" name="preference" value="logins" /> Logins / OAuth</label>
+          <label class="radio"><input type="radio" name="preference" value="ai" /> AI permissions</label>
+          <label class="radio"><input type="radio" name="preference" value="" checked /> Skip</label>
+        </fieldset>
+
+        <input type="hidden" name="angle" id="angle-field" value="money" />
+        <input type="hidden" name="source" id="source-field" value="direct" />
+
+        <button type="submit" class="btn btn-primary btn-block" id="submit-btn">
+          Get early access
+        </button>
+      </form>
+
+      <div id="form-success" class="form-status success" hidden>
+        <h3>You’re on the list.</h3>
+        <p>We’ll email when early access opens. No inbox scan ran — that comes later, on your device.</p>
+      </div>
+      <div id="form-error" class="form-status error" hidden role="alert">
+        <p id="form-error-text">Something went wrong. Try again, or email d.demnard@gmail.com.</p>
+      </div>
+      <div id="form-config" class="form-status warn" hidden>
+        <p>
+          Waitlist endpoint not configured — local mock only.
+          See <code>public/waitlist.fallback.md</code>.
+        </p>
+      </div>
+
+      <p class="legal-links">
+        <a href="privacy.html">Privacy</a>
+        ·
+        <a href="terms.html">Terms</a>
+      </p>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap">
+      <p>
+        <strong>Umbra</strong> is a working product codename.
+        Trademark clearance in progress.
+        Not affiliated with Google or other mark owners.
+      </p>
+      <p class="muted">
+        © <span id="year"></span> ·
+        <a href="privacy.html">Privacy</a> ·
+        <a href="terms.html">Terms</a>
+      </p>
+      <p class="muted small">Postal address will be published before we send any mail.</p>
+      <!-- LLC_ADDRESS: fill before marketing email -->
+    </div>
+  </footer>
+
+  <script src="js/config.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

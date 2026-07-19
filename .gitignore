@@ -1,0 +1,17 @@
+.DS_Store
+Thumbs.db
+*.log
+.env
+.env.*
+!.env.example
+node_modules/
+dist/
+.vercel
+.wrangler
+.netlify
+data/
+*.local
+.idea/
+.vscode/
+secrets/
+form-endpoint.local.js
