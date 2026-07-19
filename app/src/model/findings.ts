@@ -45,7 +45,60 @@ export const GOOGLE_PERMISSIONS_URL =
 export const GOOGLE_SECURITY_URL =
   "https://myaccount.google.com/security-checkup";
 
+export const GOOGLE_ACTIVITY_URL =
+  "https://myaccount.google.com/activitycontrols";
+
 export function defaultRevokeUrl(kind: FindingKind): string {
   if (kind === "security_alert") return GOOGLE_SECURITY_URL;
+  if (kind === "location") return GOOGLE_ACTIVITY_URL;
   return GOOGLE_PERMISSIONS_URL;
+}
+
+const ALLOWED_REVOKE_HOSTS = new Set([
+  "myaccount.google.com",
+  "account.live.com",
+  "account.microsoft.com",
+  "accounts.google.com",
+  "github.com",
+  "support.google.com",
+]);
+
+/**
+ * Only allow https URLs to known account-management hosts (or empty).
+ * Blocks javascript: and random schemes before setting href.
+ */
+export function safeRevokeUrl(url: string | undefined): string | undefined {
+  if (!url || !url.trim()) return undefined;
+  try {
+    const u = new URL(url.trim());
+    if (u.protocol !== "https:") return undefined;
+    if (ALLOWED_REVOKE_HOSTS.has(u.hostname)) return u.toString();
+    // Allow subdomains of google.com for account product pages
+    if (
+      u.hostname.endsWith(".google.com") ||
+      u.hostname === "google.com"
+    ) {
+      return u.toString();
+    }
+    return undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+export function confidenceLabel(c: Confidence): string {
+  switch (c) {
+    case "high":
+      return "High — strong match to a known permission pattern";
+    case "medium":
+      return "Medium — likely access signal; review the evidence";
+    case "low":
+      return "Low — weak signal; may be noisy";
+  }
+}
+
+export function sourceLabel(s: FindingSource): string {
+  return s === "demo"
+    ? "Demo fixture (not your inbox)"
+    : "Your Gmail (this device only)";
 }

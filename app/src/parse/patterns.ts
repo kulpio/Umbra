@@ -13,15 +13,14 @@ export type PatternRule = {
 };
 
 /**
- * Ordered rules: first match wins for a message.
- * Focused on permission / agent / location / security signals — not billing.
+ * Ordered rules: first match wins.
+ * Permissions / agents / location / security — not billing.
  */
 export const RULES: PatternRule[] = [
-  // More specific access grants before generic "Security alert" subjects
   {
     id: "oauth-granted",
     kind: "oauth_grant",
-    test: /was granted access|granted access to your google|oauth application authorized|third-party (app|application) was authorized/i,
+    test: /was granted access|granted access to your google|oauth application authorized|third-party (app|application) was authorized|new oauth application/i,
     partyFrom:
       /(?:Security alert:\s*)?([A-Za-z0-9][A-Za-z0-9 ._-]{1,40}?)\s+was granted/i,
     defaultParty: "Third-party app",
@@ -31,20 +30,21 @@ export const RULES: PatternRule[] = [
       `OAuth-style grant involving ${p}. Confirm you still want this access.`,
   },
   {
-    id: "ai-openai",
+    id: "ai-agent",
     kind: "ai_agent",
-    test: /openai|chatgpt|claude\.ai|anthropic|copilot|gemini app|ai assistant/i,
-    partyFrom: /(OpenAI|ChatGPT|Claude|Anthropic|Copilot|Gemini)/i,
+    test: /openai|chatgpt|claude|anthropic|copilot|gemini app|ai assistant|ai agent|cursor ide|perplexity|midjourney/i,
+    partyFrom:
+      /(OpenAI|ChatGPT|Claude|Anthropic|Copilot|Gemini|Cursor|Perplexity|Midjourney)/i,
     defaultParty: "AI product",
     confidence: "high",
     title: (p) => `${p}: AI / agent-style access`,
     summary: (p) =>
-      `${p} appears in a connection or access notice. Audit scopes and revoke unused AI connectors.`,
+      `${p} appears with agent or assistant access. Audit scopes; revoke unused connectors.`,
   },
   {
     id: "connected",
     kind: "connected_app",
-    test: /is connected to your|app connected to your|sign in with google|signed in with google|signed in to \w+ using sign in with google/i,
+    test: /is connected to your|app connected to your|sign in with google|signed in with google|signed in to \w+ using sign in with google|google account linked/i,
     partyFrom: /([A-Za-z0-9][A-Za-z0-9 ._-]{1,40}?)\s+is connected/i,
     defaultParty: "Connected app",
     confidence: "medium",
@@ -55,8 +55,8 @@ export const RULES: PatternRule[] = [
   {
     id: "loc",
     kind: "location",
-    test: /location sharing|real-time location|device location|geofenc|maps timeline|who can see your location/i,
-    partyFrom: /(Google Maps|Uber|Lyft|Maps)/i,
+    test: /location sharing|real-time location|device location|geofenc|maps timeline|who can see your location|find my device|location of your (phone|device)|location permissions|location access helps|location settings/i,
+    partyFrom: /(Google Maps|Uber|Lyft|Maps|Find My Device|Google)/i,
     defaultParty: "Location service",
     confidence: "medium",
     title: (p) => `${p}: location or sharing signal`,
@@ -66,13 +66,12 @@ export const RULES: PatternRule[] = [
   {
     id: "sec-signin",
     kind: "security_alert",
-    // Avoid matching "Security alert: App was granted access" (handled above)
-    test: /new sign[- ]?in|signed in on|unusual activity|security alert(?![^\n]{0,80}granted access)/i,
+    test: /new sign[- ]?in|signed in on|unusual activity|app password|less secure app|security alert(?![^\n]{0,80}granted access)/i,
     defaultParty: "Google Account",
     confidence: "high",
-    title: () => "Security alert: sign-in or unusual activity",
+    title: () => "Security alert: sign-in or account access path",
     summary: () =>
-      "Account security notice. Confirm the session; review devices if it was not you.",
+      "Account security notice. Confirm the session or credential path; review devices if it was not you.",
   },
   {
     id: "third-party",

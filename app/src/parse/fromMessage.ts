@@ -1,5 +1,5 @@
 import type { Finding, FindingSource } from "../model/findings";
-import { defaultRevokeUrl } from "../model/findings";
+import { defaultRevokeUrl, safeRevokeUrl } from "../model/findings";
 import type { SampleMessage } from "../demo/fixtures";
 import { RULES } from "./patterns";
 
@@ -23,6 +23,7 @@ export function findingFromMessage(
   for (const rule of RULES) {
     if (!rule.test.test(hay)) continue;
     const party = extractParty(hay, rule.partyFrom, rule.defaultParty);
+    const revoke = safeRevokeUrl(defaultRevokeUrl(rule.kind));
     return {
       id: `${source}-${msg.id}-${rule.id}`,
       kind: rule.kind,
@@ -32,7 +33,7 @@ export function findingFromMessage(
       evidenceDate: msg.date,
       source,
       confidence: rule.confidence,
-      revokeUrl: defaultRevokeUrl(rule.kind),
+      revokeUrl: revoke,
       rawSubject: msg.subject,
     };
   }

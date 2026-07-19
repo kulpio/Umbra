@@ -8,7 +8,13 @@
       name="description"
       content="Read-only permission map. Demo fixtures or client-side Gmail scan. Codename Umbra."
     />
+    <!-- Deploy hardening: tighten if hosting app/dist on a static host -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; base-uri 'self'; script-src 'self' https://accounts.google.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://gmail.googleapis.com https://www.googleapis.com https://oauth2.googleapis.com; frame-src https://accounts.google.com; form-action 'self'"
+    />
   </head>
+
   <body>
     <div id="app"></div>
     <script type="module" src="/src/main.ts"></script>

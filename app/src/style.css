@@ -7,6 +7,7 @@
   --accent: #e8c547;
   --ok: #3ecf8e;
   --danger: #f07178;
+  --info: #6ab0ff;
   --font: "Segoe UI", system-ui, sans-serif;
   --mono: ui-monospace, Menlo, monospace;
 }
@@ -42,7 +43,7 @@ a {
   gap: 1rem;
   border-bottom: 1px solid var(--line);
   padding-bottom: 1rem;
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
 }
 
 .brand {
@@ -65,7 +66,7 @@ a {
   margin: 0.35rem 0 0;
   font-size: 0.85rem;
   color: var(--muted);
-  max-width: 36rem;
+  max-width: 38rem;
 }
 
 .actions {
@@ -84,6 +85,9 @@ button,
   color: var(--text);
   padding: 0.55rem 0.9rem;
   min-height: 42px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
 }
 
 button.primary {
@@ -102,8 +106,38 @@ button.ghost {
   background: transparent;
 }
 
+a.btn.external {
+  background: var(--accent);
+  color: #14120a;
+  border-color: var(--accent);
+  font-weight: 650;
+}
+
+.banner {
+  font-size: 0.88rem;
+  padding: 0.55rem 0.85rem;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  margin-bottom: 0.75rem;
+  color: var(--muted);
+}
+
+.banner.demo {
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
+  color: var(--text);
+}
+
+.banner.live {
+  border-color: color-mix(in srgb, var(--ok) 45%, var(--line));
+  color: var(--text);
+}
+
+.banner.idle {
+  border-style: dashed;
+}
+
 .status {
-  margin: 0.75rem 0 1rem;
+  margin: 0 0 0.75rem;
   padding: 0.75rem 0.9rem;
   border-radius: 10px;
   border: 1px solid var(--line);
@@ -119,6 +153,11 @@ button.ghost {
 
 .status.ok {
   border-color: color-mix(in srgb, var(--ok) 40%, var(--line));
+  color: var(--text);
+}
+
+.status.info {
+  border-color: color-mix(in srgb, var(--info) 35%, var(--line));
 }
 
 .layout {
@@ -146,6 +185,12 @@ button.ghost {
   padding: 0.85rem 1rem;
   font-size: 0.95rem;
   border-bottom: 1px solid var(--line);
+}
+
+.panel h2 .count {
+  color: var(--muted);
+  font-weight: 500;
+  font-size: 0.85rem;
 }
 
 .filters {
@@ -223,8 +268,18 @@ button.ghost {
   font-size: 1.05rem;
 }
 
+.mode-chip {
+  display: inline-block;
+  margin: 0 0 0.85rem;
+  font-size: 0.78rem;
+  color: var(--muted);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.2rem 0.65rem;
+}
+
 .detail dl {
-  margin: 0;
+  margin: 0 0 1rem;
   display: grid;
   gap: 0.65rem;
 }
@@ -240,21 +295,35 @@ button.ghost {
   margin: 0.15rem 0 0;
 }
 
+.detail .mono,
+code {
+  font-family: var(--mono);
+  font-size: 0.85em;
+}
+
 .empty {
   padding: 1.25rem 1rem;
   color: var(--muted);
   font-size: 0.9rem;
 }
 
+.empty p {
+  margin: 0 0 0.5rem;
+}
+
+.empty .muted-line,
+.muted-line {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
 .setup {
   font-size: 0.85rem;
   color: var(--muted);
-  margin-top: 0.5rem;
+  margin: 0 0 0.85rem;
 }
 
 .setup code {
-  font-family: var(--mono);
-  font-size: 0.8em;
   color: var(--text);
 }
 
