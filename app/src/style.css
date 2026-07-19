@@ -1,0 +1,265 @@
+:root {
+  --bg: #0c0e12;
+  --elev: #141820;
+  --text: #e8eaef;
+  --muted: #9aa3b5;
+  --line: #252a36;
+  --accent: #e8c547;
+  --ok: #3ecf8e;
+  --danger: #f07178;
+  --font: "Segoe UI", system-ui, sans-serif;
+  --mono: ui-monospace, Menlo, monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.45;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--accent);
+}
+
+#app {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1rem 1.25rem 3rem;
+}
+
+.topbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+}
+
+.brand {
+  font-weight: 700;
+  font-size: 1.2rem;
+  letter-spacing: -0.02em;
+}
+
+.badge {
+  display: inline-block;
+  margin-left: 0.4rem;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.honesty {
+  margin: 0.35rem 0 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+  max-width: 36rem;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+button,
+.btn {
+  font: inherit;
+  cursor: pointer;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--elev);
+  color: var(--text);
+  padding: 0.55rem 0.9rem;
+  min-height: 42px;
+}
+
+button.primary {
+  background: var(--accent);
+  color: #14120a;
+  border-color: var(--accent);
+  font-weight: 650;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+button.ghost {
+  background: transparent;
+}
+
+.status {
+  margin: 0.75rem 0 1rem;
+  padding: 0.75rem 0.9rem;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--elev);
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.status.error {
+  border-color: color-mix(in srgb, var(--danger) 50%, var(--line));
+  color: var(--text);
+}
+
+.status.ok {
+  border-color: color-mix(in srgb, var(--ok) 40%, var(--line));
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 860px) {
+  .layout {
+    grid-template-columns: 1.1fr 0.9fr;
+    align-items: start;
+  }
+}
+
+.panel {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--elev);
+  min-height: 200px;
+}
+
+.panel h2 {
+  margin: 0;
+  padding: 0.85rem 1rem;
+  font-size: 0.95rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  padding: 0.65rem 1rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.filters button {
+  min-height: 36px;
+  padding: 0.35rem 0.7rem;
+  font-size: 0.85rem;
+}
+
+.filters button.active {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 60vh;
+  overflow: auto;
+}
+
+.list li {
+  border-bottom: 1px solid var(--line);
+}
+
+.list button.row {
+  width: 100%;
+  text-align: left;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  display: grid;
+  gap: 0.2rem;
+  padding: 0.75rem 1rem;
+}
+
+.list button.row:hover,
+.list button.row.selected {
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+}
+
+.row-title {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.row-meta {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.kind {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--accent);
+}
+
+.detail {
+  padding: 1rem;
+}
+
+.detail h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.05rem;
+}
+
+.detail dl {
+  margin: 0;
+  display: grid;
+  gap: 0.65rem;
+}
+
+.detail dt {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+}
+
+.detail dd {
+  margin: 0.15rem 0 0;
+}
+
+.empty {
+  padding: 1.25rem 1rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.setup {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-top: 0.5rem;
+}
+
+.setup code {
+  font-family: var(--mono);
+  font-size: 0.8em;
+  color: var(--text);
+}
+
+.footer-note {
+  margin-top: 1.5rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
