@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Umbra — Find what’s still leeching you</title>
-  <meta name="description" content="Early access waitlist. Hunt zombie subscriptions, forgotten app logins, and over-permissioned AI. No inbox scan yet." />
+  <title>Umbra — See every permission still open</title>
+  <meta name="description" content="Early access waitlist. One place for OAuth access, AI agent control, and location permissions. No live scan yet. Codename Umbra." />
   <meta name="theme-color" content="#0c0e12" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; form-action 'self' https://formsubmit.co; img-src 'self' data:; script-src 'self'; style-src 'self'; connect-src 'self' https://formsubmit.co" />
   <link rel="stylesheet" href="css/styles.css" />
@@ -22,28 +22,28 @@
 
   <main>
     <section class="hero wrap">
-      <p class="eyebrow">Leech-hunt · early access</p>
-      <h1 id="hero-headline">Find every subscription still draining you — even the ones you forgot.</h1>
+      <p class="eyebrow">Permission control · early access</p>
+      <h1 id="hero-headline">See every permission still open on your digital life.</h1>
       <p id="hero-subhead" class="subhead">
-        Forgotten trials. Zombie gyms. Apps that charge quiet. Get on the list for the scan that hunts money leeches first.
+        OAuth grants. Connected apps. Keys you forgot you handed out. One map. Guided revoke. Early access waitlist.
       </p>
       <p class="hero-actions">
-        <a class="btn btn-primary" href="#waitlist" id="hero-cta">Get early access</a>
+        <a class="btn btn-primary" href="#waitlist" id="hero-cta">Map my permissions</a>
       </p>
       <nav class="angle-nav" aria-label="Pitch angles">
         <span class="angle-label">Angle:</span>
-        <a href="?v=money" data-v="money" class="angle-link is-active">Money</a>
-        <a href="?v=oauth" data-v="oauth" class="angle-link">Logins</a>
-        <a href="?v=ai" data-v="ai" class="angle-link">AI</a>
+        <a href="?v=access" data-v="access" class="angle-link is-active">Access</a>
+        <a href="?v=agents" data-v="agents" class="angle-link">Agents</a>
+        <a href="?v=location" data-v="location" class="angle-link">Location</a>
       </nav>
     </section>
 
     <section class="section wrap" aria-labelledby="find-heading">
-      <h2 id="find-heading">What the scan will find</h2>
+      <h2 id="find-heading">What the scan will map</h2>
       <ul id="hero-bullets" class="bullets">
-        <li>Recurring charges you stopped using but never canceled</li>
-        <li>Free trials that flipped to paid while you weren’t looking</li>
-        <li>Receipts and renewals buried in years of email — not just what your bank app surfaces today</li>
+        <li>Forgotten “Sign in with…” and connected-app access still live</li>
+        <li>Security alerts and connection receipts that prove who still has a door</li>
+        <li>Deep links to revoke — read-only first, no honeypot custody</li>
       </ul>
     </section>
 
@@ -56,32 +56,31 @@
         </li>
         <li>
           <strong>When alpha opens</strong>
-          <span>Connect Gmail with <em>read-only</em> access. The scan is designed to run <em>on your device</em> — not as a mail honeypot.</span>
+          <span>Connect sources with <em>read-only</em> access where needed. Inbox archaeology runs <em>on your device</em> — method, not the whole product. Not a mail honeypot.</span>
         </li>
         <li>
-          <strong>See the leeches</strong>
-          <span>Forgotten charges, zombie apps, over-permissioned AI — plus guided links to shut them off.</span>
+          <strong>See the footprint</strong>
+          <span>Permissions, agents, location access — plus guided paths to shut them off. Physical consent (beacon) is the long path, not a live feature here.</span>
         </li>
       </ol>
-      <p class="note">No live inbox scan on this page. Waitlist only.</p>
+      <p class="note">No live permission scan on this page. Waitlist only.</p>
     </section>
 
     <section class="section wrap proof" aria-labelledby="proof-heading">
       <h2 id="proof-heading" class="visually-hidden">Who it’s for</h2>
       <p class="proof-line">
-        Built for people drowning in subscriptions, forgotten OAuth, and AI apps that took more access than they needed.
+        Built for people who want a real map of access: connected apps, AI agents, and who can still see where they are.
       </p>
     </section>
 
     <section class="section wrap waitlist-section" id="waitlist" aria-labelledby="waitlist-heading">
       <h2 id="waitlist-heading">Join the waitlist</h2>
       <p class="form-micro" id="form-micro">
-        Early access waitlist only. No inbox scan yet — we’ll email when alpha opens.
+        Early access waitlist only. No scan yet — we’ll email when alpha opens.
         No spam. Unsubscribe anytime.
       </p>
 
       <form id="waitlist-form" class="waitlist-form" novalidate>
-        <!-- FormSubmit fields also set in JS JSON body -->
         <input type="hidden" name="_subject" value="Umbra waitlist" />
         <input type="hidden" name="_template" value="table" />
         <input type="hidden" name="_captcha" value="false" />
@@ -101,24 +100,25 @@
         </label>
 
         <fieldset class="field fieldset">
-          <legend>I’m most annoyed by <span class="opt">(optional)</span></legend>
-          <label class="radio"><input type="radio" name="preference" value="money" /> Money / subs</label>
-          <label class="radio"><input type="radio" name="preference" value="logins" /> Logins / OAuth</label>
-          <label class="radio"><input type="radio" name="preference" value="ai" /> AI permissions</label>
+          <legend>I care most about <span class="opt">(optional)</span></legend>
+          <label class="radio"><input type="radio" name="preference" value="access" /> Map my permissions</label>
+          <label class="radio"><input type="radio" name="preference" value="agents" /> AI agent access</label>
+          <label class="radio"><input type="radio" name="preference" value="location" /> Location access</label>
+          <label class="radio"><input type="radio" name="preference" value="all" /> All of it</label>
           <label class="radio"><input type="radio" name="preference" value="" checked /> Skip</label>
         </fieldset>
 
-        <input type="hidden" name="angle" id="angle-field" value="money" />
+        <input type="hidden" name="angle" id="angle-field" value="access" />
         <input type="hidden" name="source" id="source-field" value="direct" />
 
         <button type="submit" class="btn btn-primary btn-block" id="submit-btn">
-          Get early access
+          Map my permissions
         </button>
       </form>
 
       <div id="form-success" class="form-status success" hidden>
         <h3>You’re on the list.</h3>
-        <p>We’ll email when early access opens. No inbox scan ran — that comes later, on your device.</p>
+        <p>We’ll email when early access opens. No scan ran — that comes later, on your device where it can.</p>
       </div>
       <div id="form-error" class="form-status error" hidden role="alert">
         <p id="form-error-text">Something went wrong. Try again, or email d.demnard@gmail.com.</p>

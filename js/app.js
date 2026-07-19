@@ -1,42 +1,50 @@
 (function () {
   "use strict";
 
+  // Positioning lock 2026-07-19: permissions / agents / location.
+  // Legacy ?v=money|oauth|ai redirect to new keys (undocumented).
+  var LEGACY = {
+    money: "access",
+    oauth: "access",
+    ai: "agents",
+  };
+
   var ANGLES = {
-    money: {
-      headline:
-        "Find every subscription still draining you — even the ones you forgot.",
+    access: {
+      headline: "See every permission still open on your digital life.",
       subhead:
-        "Forgotten trials. Zombie gyms. Apps that charge quiet. Get on the list for the scan that hunts money leeches first.",
-      cta: "Get early access",
+        "OAuth grants. Connected apps. Keys you forgot you handed out. One map. Guided revoke. Early access waitlist.",
+      cta: "Map my permissions",
       bullets: [
-        "Recurring charges you stopped using but never canceled",
-        "Free trials that flipped to paid while you weren’t looking",
-        "Receipts and renewals buried in years of email — not just what your bank app surfaces today",
+        "Forgotten “Sign in with…” and connected-app access still live",
+        "Security alerts and connection receipts that prove who still has a door",
+        "Deep links to revoke — read-only first, no honeypot custody",
       ],
+      title: "Permission map",
     },
-    oauth: {
-      headline:
-        "See every app still logged into your life. Kill the ones you don’t remember.",
+    agents: {
+      headline: "Your AI agents have more access than you think. Here’s the kill switch.",
       subhead:
-        "“Sign in with Google” from 2019 still has a key. Map the access leeches before something else does.",
-      cta: "Join the waitlist",
+        "Plugins, automations, assistants that read mail and files. Grant scoped. Revoke fast. Audit what they touched. Waitlist.",
+      cta: "Control agent access",
       bullets: [
-        "Old OAuth grants and “connected apps” you forgot existed",
-        "Security alerts and “new sign-in” mail that prove who still has a door",
-        "Guided revoke paths — read-only first, no honeypot custody",
+        "AI tools and automations still tied to your accounts",
+        "Broad scopes clicked in a hurry and never reviewed",
+        "A registry for agent access: grant, revoke, safe abort, audit trail",
       ],
+      title: "AI agent control",
     },
-    ai: {
-      headline:
-        "Your AI assistants have more access than you think. Here’s the list.",
+    location: {
+      headline: "Who can still see where you are?",
       subhead:
-        "Agents, plugins, and “helpful” tools that read mail, files, and calendars. See the permission blast radius — early access waitlist.",
-      cta: "Show me the waitlist",
+        "Location access, geofences, ambient sensing creep. Map geo permissions you forgot. Path toward physical consent later. No hardware on this page.",
+      cta: "Check location access",
       bullets: [
-        "AI tools and automations tied to your accounts",
-        "Broad scopes granted in a hurry and never reviewed",
-        "A single place to inventory agent access before you grant the next one",
+        "Apps and services that still have location or geofence rights",
+        "Ambient and device sensing you never meant to leave on",
+        "Direction: portable consent in physical space (beacon) without claiming it ships today",
       ],
+      title: "Location permissions",
     },
   };
 
@@ -51,10 +59,6 @@
     return false;
   }
 
-  /**
-   * No third-party trackers ship by default.
-   * Guard: if anything later injects non-essential scripts, skip when GPC is on.
-   */
   function respectGpc() {
     if (!gpcActive()) return;
     document.documentElement.setAttribute("data-gpc", "1");
@@ -63,13 +67,14 @@
 
   function getVariant() {
     var params = new URLSearchParams(window.location.search);
-    var v = (params.get("v") || "money").toLowerCase();
-    if (!ANGLES[v]) v = "money";
+    var v = (params.get("v") || "access").toLowerCase();
+    if (LEGACY[v]) v = LEGACY[v];
+    if (!ANGLES[v]) v = "access";
     return v;
   }
 
   function applyAngle(key) {
-    var a = ANGLES[key] || ANGLES.money;
+    var a = ANGLES[key] || ANGLES.access;
     var h = qs("#hero-headline");
     var s = qs("#hero-subhead");
     var cta = qs("#hero-cta");
@@ -99,13 +104,7 @@
     });
 
     try {
-      document.title =
-        "Umbra — " +
-        (key === "money"
-          ? "Zombie subscriptions"
-          : key === "oauth"
-            ? "Forgotten logins"
-            : "AI permissions");
+      document.title = "Umbra — " + (a.title || "Permissions");
     } catch (e) {}
   }
 
@@ -157,7 +156,6 @@
         return;
       }
 
-      // Honeypot (FormSubmit _honey + legacy _gotcha)
       var hp =
         form.querySelector('[name="_honey"]') ||
         form.querySelector('[name="_gotcha"]');
@@ -169,7 +167,7 @@
 
       var pref = form.querySelector('input[name="preference"]:checked');
       var angle =
-        (qs("#angle-field") && qs("#angle-field").value) || "money";
+        (qs("#angle-field") && qs("#angle-field").value) || "access";
       var source = (sourceField && sourceField.value) || "direct";
       var gpc = gpcActive();
 
@@ -186,7 +184,6 @@
         _replyto: email,
       };
 
-      // Local mock when no endpoint configured
       if (!action) {
         console.log("[Umbra waitlist mock]", payload);
         show(configHint, true);
@@ -200,7 +197,6 @@
         submitBtn.textContent = "Sending…";
       }
 
-      // FormSubmit AJAX expects JSON body + Accept application/json
       fetch(action, {
         method: "POST",
         headers: {
@@ -223,8 +219,6 @@
         .then(function (result) {
           var res = result.res;
           var data = result.data;
-          // FormSubmit AJAX: success only when HTTP ok AND success is true/"true".
-          // Never treat arbitrary `message` as success (e.g. activation, errors).
           var okBody =
             data &&
             (data.success === true || data.success === "true");
@@ -236,7 +230,6 @@
           var detail =
             (data && (data.message || data.error)) ||
             (!res.ok ? "HTTP " + res.status : "Unexpected response");
-          // Activation pending: honest, not a fake waitlist success
           if (
             data &&
             typeof data.message === "string" &&
