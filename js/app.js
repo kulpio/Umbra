@@ -223,26 +223,36 @@
         .then(function (result) {
           var res = result.res;
           var data = result.data;
-          // FormSubmit returns success: "true" or similar on OK
-          if (
-            res.ok ||
-            (data &&
-              (data.success === true ||
-                data.success === "true" ||
-                data.message))
-          ) {
+          // FormSubmit AJAX: success only when HTTP ok AND success is true/"true".
+          // Never treat arbitrary `message` as success (e.g. activation, errors).
+          var okBody =
+            data &&
+            (data.success === true || data.success === "true");
+          if (res.ok && okBody) {
             show(success, true);
             form.hidden = true;
             return;
           }
-          throw new Error(
-            (data && (data.message || data.error)) || "HTTP " + res.status
-          );
+          var detail =
+            (data && (data.message || data.error)) ||
+            (!res.ok ? "HTTP " + res.status : "Unexpected response");
+          // Activation pending: honest, not a fake waitlist success
+          if (
+            data &&
+            typeof data.message === "string" &&
+            /activat/i.test(data.message)
+          ) {
+            throw new Error(
+              "Form needs one-time activation. Check the founder inbox for FormSubmit’s Activate link, then try again."
+            );
+          }
+          throw new Error(detail);
         })
         .catch(function (err) {
           console.error("[Umbra waitlist]", err);
           if (errorText) {
             errorText.textContent =
+              (err && err.message) ||
               "Could not reach the waitlist service. Try again, or email d.demnard@gmail.com.";
           }
           show(error, true);
