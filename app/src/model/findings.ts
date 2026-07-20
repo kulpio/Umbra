@@ -22,7 +22,13 @@ export type Ecosystem =
   | "browser"
   | "other";
 
-export type HowKnown = "demo" | "gmail" | "manual" | "guided";
+export type HowKnown =
+  | "demo"
+  | "gmail"
+  | "manual"
+  | "guided"
+  | "local_scan"
+  | "cloud_directed";
 
 export type AccessTag =
   | "mail"
@@ -121,6 +127,7 @@ const ALLOWED_REVOKE_HOSTS = new Set([
   "perplexity.ai",
   "www.perplexity.ai",
   "gemini.google.com",
+  "aistudio.google.com",
   "copilot.microsoft.com",
 ]);
 
@@ -188,8 +195,16 @@ export function howKnownLabel(h: HowKnown): string {
       return "Agent registry (you added)";
     case "guided":
       return "Guided review (you marked)";
+    case "local_scan":
+      return "This Mac (companion scan)";
+    case "cloud_directed":
+      return "Directed cloud (you pointed)";
   }
 }
+
+export const OPENAI_PLATFORM = "https://platform.openai.com/settings";
+export const GITHUB_COPILOT = "https://github.com/settings/copilot";
+export const GOOGLE_AI_STUDIO = "https://aistudio.google.com/";
 
 /** Prefer howKnown; fall back from legacy source. */
 export function sourceLabel(f: Pick<Finding, "source" | "howKnown">): string {

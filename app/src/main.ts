@@ -26,16 +26,36 @@ import {
   type MapFilter,
   visibleFindings,
 } from "./map/filter";
+import { parseImportPayload } from "./merge/findings";
 import {
   addManualAgent,
   clearManualAgents,
   listManualAgents,
 } from "./registry/agents";
-import { runDemoScan } from "./scan/runDemo";
+import {
+  CLOUD_SURFACES,
+  listCloudDirected,
+  markCloudInUse,
+} from "./registry/cloud";
+import {
+  clearImportedLocal,
+  listImportedLocal,
+  runDemoScan,
+  setImportedLocal,
+} from "./scan/runDemo";
 import { demoScanStats, runLiveScan } from "./scan/runLive";
 
 type Mode = "idle" | "demo" | "live";
-type SourcePanel = "demo" | "agents" | "apple" | "location" | "gmail";
+type SourcePanel =
+  | "demo"
+  | "agents"
+  | "mac"
+  | "cloud"
+  | "apple"
+  | "location"
+  | "gmail";
+
+const COMPANION_URL = "http://127.0.0.1:8787";
 
 let findings: Finding[] = [];
 let dismissed = new Set<string>();
@@ -48,7 +68,7 @@ let sourcePanel: SourcePanel = "demo";
 let lastStats: ScanStats = emptyScanStats();
 let debugOpen = false;
 let statusText =
-  "Multi-surface permission map: Access · Agents · Location. Load the demo map — no Google required.";
+  "Permission map: Access · Agents · Location. Local companion + directed cloud + demo. Google optional.";
 let statusKind: "ok" | "error" | "info" | "" = "info";
 let busy = false;
 let copyFlash = "";
@@ -107,7 +127,7 @@ function chipCounts() {
 
 function pillarIntro(): string {
   if (filter === "agents") {
-    return `<div class="pillar-intro"><strong>Agents</strong> — standing inventory of AI tools and automations. Add via Agent registry. Not a live control plane for ChatGPT/Claude servers.</div>`;
+    return `<div class="pillar-intro"><strong>Agents</strong> — AI on this Mac (companion scan), directed cloud you mark, and manual registry. Not a live control plane for cloud sessions.</div>`;
   }
   if (filter === "location") {
     return `<div class="pillar-intro"><strong>Location</strong> — Always / While Using, geofence, significant locations. Guided OS links only — Umbra does not read device TCC from the web.</div>`;
@@ -261,6 +281,72 @@ function onClearRegistry() {
   setStatus("Agent registry cleared (session).", "ok");
 }
 
+async function onPullCompanion() {
+  setBusy(true);
+  try {
+    const res = await fetch(`${COMPANION_URL}/scan`);
+    if (!res.ok) throw new Error(`Companion HTTP ${res.status}`);
+    const data = await res.json();
+    const list = parseImportPayload(data);
+    setImportedLocal(list);
+    rebuildFromLayers();
+    filter = "agents";
+    mode = mode === "idle" ? "demo" : mode;
+    setStatus(
+      `Pulled ${list.length} local_scan findings from companion (${COMPANION_URL}).`,
+      "ok",
+    );
+  } catch (e) {
+    setStatus(
+      `Companion unreachable at ${COMPANION_URL}. Run: cd companion && npm run serve — ${(e instanceof Error ? e.message : String(e))}`,
+      "error",
+    );
+  } finally {
+    setBusy(false);
+  }
+}
+
+function onImportFile(file: File) {
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const data = JSON.parse(String(reader.result));
+      const list = parseImportPayload(data);
+      setImportedLocal(list);
+      rebuildFromLayers();
+      filter = "agents";
+      mode = mode === "idle" ? "demo" : mode;
+      setStatus(`Imported ${list.length} findings from ${file.name}.`, "ok");
+    } catch (e) {
+      setStatus(e instanceof Error ? e.message : String(e), "error");
+    }
+  };
+  reader.readAsText(file);
+}
+
+function onClearLocalImport() {
+  clearImportedLocal();
+  rebuildFromLayers();
+  setStatus("Cleared companion/import layer.", "ok");
+}
+
+function onMarkCloud(id: string) {
+  const surface = CLOUD_SURFACES.find((s) => s.id === id);
+  if (!surface) return;
+  const notes =
+    (document.getElementById(`cloud-notes-${id}`) as HTMLInputElement | null)
+      ?.value || "";
+  markCloudInUse(surface, notes);
+  rebuildFromLayers();
+  selectedId = `cloud-${id}`;
+  filter = "agents";
+  mode = mode === "idle" ? "demo" : mode;
+  setStatus(
+    `Marked ${surface.party} as in use (cloud_directed). Umbra only tracks what you point at.`,
+    "ok",
+  );
+}
+
 function onMarkGuided(item: GuidedItem) {
   markGuidedReviewed(item);
   rebuildFromLayers();
@@ -346,6 +432,37 @@ function sourceTab(id: SourcePanel, label: string, note?: string): string {
 }
 
 function renderSourcesBody(): string {
+  if (sourcePanel === "mac") {
+    const n = listImportedLocal().length;
+    return `
+      <div class="src-body">
+        <p class="setup"><strong>This Mac (companion)</strong> — local scan of AI app names, known folders (existence only), LaunchAgents basenames, process names. No secrets. Companion must bind 127.0.0.1 only.</p>
+        <div class="actions-row">
+          <button type="button" class="primary" id="btn-pull-companion" ${busy ? "disabled" : ""}>Pull from companion :8787</button>
+          <label class="file-btn">Import JSON<input type="file" id="import-json" accept="application/json,.json" hidden /></label>
+          <button type="button" class="ghost" id="btn-clear-local" ${n ? "" : "disabled"}>Clear import layer</button>
+        </div>
+        <p class="muted-line">${n} local_scan findings imported this session. Run <code>cd companion && npm run serve</code>.</p>
+      </div>`;
+  }
+  if (sourcePanel === "cloud") {
+    return `
+      <div class="src-body">
+        <p class="setup"><strong>Directed cloud.</strong> Umbra only tracks what you point at. No drive-by cloud access. Mark surfaces you use; open manage links externally.</p>
+        <ul class="guided-list">
+          ${CLOUD_SURFACES.map(
+            (s) => `<li>
+              <strong>${escapeHtml(s.title)}</strong>
+              <p>${escapeHtml(s.body)}</p>
+              <a href="${escapeAttr(s.href)}" target="_blank" rel="noopener noreferrer">Open manage</a>
+              <input type="text" id="cloud-notes-${escapeAttr(s.id)}" placeholder="Optional note" class="cloud-note" />
+              <button type="button" class="ghost btn-cloud" data-cloud="${escapeAttr(s.id)}">Mark as in use</button>
+            </li>`,
+          ).join("")}
+        </ul>
+        <p class="muted-line">${listCloudDirected().length} cloud_directed entries this session.</p>
+      </div>`;
+  }
   if (sourcePanel === "agents") {
     const regs = listManualAgents();
     return `
@@ -458,8 +575,8 @@ function render() {
     <header class="topbar">
       <div>
         <div class="brand">Umbra <span class="badge">codename · multi-surface</span></div>
-        <p class="hero-line">One map of standing permissions: apps &amp; OAuth, AI agents, location — across Apple, Google, Microsoft, and more.</p>
-        <p class="honesty">Read-only · on this device · revoke external · dismiss/session registry memory-only · not a mail honeypot</p>
+        <p class="hero-line">Standing permissions OS: Access · Agents · Location — on this Mac, directed cloud you mark, and guided OS reviews. Not a Gmail-only scanner.</p>
+        <p class="honesty">Read-only · companion loopback · revoke external · no honeypot · no drive-by cloud</p>
       </div>
       <div class="actions">
         <button type="button" class="primary" id="btn-demo" ${busy ? "disabled" : ""}>Load demo map</button>
@@ -475,6 +592,8 @@ function render() {
       <h2>Sources</h2>
       <div class="src-tabs">
         ${sourceTab("demo", "Demo data")}
+        ${sourceTab("mac", "This Mac (companion)")}
+        ${sourceTab("cloud", "Directed cloud")}
         ${sourceTab("agents", "Agent registry")}
         ${sourceTab("apple", "Guided: Apple & device")}
         ${sourceTab("location", "Guided: Location")}
@@ -528,6 +647,18 @@ function render() {
   document.getElementById("btn-disconnect")?.addEventListener("click", onDisconnect);
   document.getElementById("btn-add-agent")?.addEventListener("click", onAddAgent);
   document.getElementById("btn-clear-agents")?.addEventListener("click", onClearRegistry);
+  document.getElementById("btn-pull-companion")?.addEventListener("click", () => void onPullCompanion());
+  document.getElementById("btn-clear-local")?.addEventListener("click", onClearLocalImport);
+  document.getElementById("import-json")?.addEventListener("change", (e) => {
+    const file = (e.target as HTMLInputElement).files?.[0];
+    if (file) onImportFile(file);
+  });
+  app.querySelectorAll<HTMLButtonElement>(".btn-cloud").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const id = btn.dataset.cloud;
+      if (id) onMarkCloud(id);
+    });
+  });
 
   app.querySelectorAll<HTMLButtonElement>("[data-src]").forEach((btn) => {
     btn.addEventListener("click", () => {

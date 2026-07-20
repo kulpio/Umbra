@@ -1,43 +1,33 @@
 # Umbra (codename)
 
-**Permissions-first** product: OAuth / connected access, AI agents, location. Not a subscription canceler.
+**Standing permissions map** — Access · Agents · Location across ecosystems.  
+**Not** a Gmail-only scanner or subscription canceler.
 
 | Surface | Path |
-|---|---|
+|---------|------|
 | Marketing waitlist | Repo root → https://kulpio.github.io/Umbra/ |
-| **MVP app (permission map)** | [`app/`](./app/) — demo scan + optional Gmail |
+| **Web map (demo + merge)** | [`app/`](./app/) |
+| **Local Mac companion** | [`companion/`](./companion/) |
 
-## App (test this)
-
-```bash
-cd app
-npm install
-npm test
-npm run dev
-```
-
-Open http://localhost:5173 → **Run demo scan**.
-
-Live Gmail: see [`app/README.md`](./app/README.md) (`VITE_GOOGLE_CLIENT_ID` in `app/.env.local`).
-
-## Marketing site (static)
+## App
 
 ```bash
-python3 -m http.server 8080
-# http://127.0.0.1:8080/
+cd app && npm install && npm run dev
+# Load demo map · Agent registry · Directed cloud · This Mac (companion)
 ```
 
-Angles: `?v=access` (default) · `agents` · `location`
+## Companion (this Mac)
 
-## Security (app)
+```bash
+cd companion && npm install
+npm run scan    # → umbra-local-scan.json
+npm run serve   # http://127.0.0.1:8787  GET /scan
+```
 
-- Read-only · client-side parse · memory-only OAuth token  
-- No mail honeypot backend  
-- Scope: `gmail.readonly` only when live mode is configured  
+Then in the app: **Sources → This Mac → Pull from companion** (or Import JSON).
 
-## Docs / vault
+Trust: read-only names/paths; no config secrets; loopback only. See `companion/README.md`.
 
-**AI team handoff (single file):**  
-`/Users/dylandemnard/DigitalBrain/Umbra/Product/TEAM-HANDOFF-NOW.md`  
+## Optional Gmail
 
-(Deep dives are linked from that file — do not start from older research rounds.)
+Parked. See `app/README.md` if unparking (Umbra GCP project only).

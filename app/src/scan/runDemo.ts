@@ -2,35 +2,35 @@ import { DEMO_FINDINGS } from "../demo/fixtures";
 import type { Finding } from "../model/findings";
 import { normalizeFinding } from "../model/findings";
 import { listGuidedFindings } from "../guided/checklists";
+import { mergeFindings } from "../merge/findings";
 import { listManualAgents } from "../registry/agents";
+import { listCloudDirected } from "../registry/cloud";
 
-/**
- * Multi-surface demo map + session manuals + guided reviews.
- * Manual agents are NOT cleared (caller policy).
- */
-export function runDemoScan(): Finding[] {
-  const byId = new Map<string, Finding>();
-  for (const f of DEMO_FINDINGS) {
-    const n = normalizeFinding(f);
-    byId.set(n.id, n);
-  }
-  // Do not merge Gmail sample parsers into default demo — keeps map multi-surface, not Gmail-heavy
-  for (const f of listManualAgents()) {
-    byId.set(f.id, normalizeFinding(f));
-  }
-  for (const f of listGuidedFindings()) {
-    byId.set(f.id, normalizeFinding(f));
-  }
-  return [...byId.values()];
+/** Session layers filled by companion import / pull (not cleared by demo load). */
+let importedLocal: Finding[] = [];
+
+export function setImportedLocal(findings: Finding[]): void {
+  importedLocal = findings.map(normalizeFinding);
 }
 
-/** Rebuild map from current demo fixtures + manuals + guided without resetting manuals. */
-export function mergeMapLayers(
-  demoAndGuided: Finding[],
-  manuals: Finding[],
-): Finding[] {
-  const byId = new Map<string, Finding>();
-  for (const f of demoAndGuided) byId.set(f.id, normalizeFinding(f));
-  for (const f of manuals) byId.set(f.id, normalizeFinding(f));
-  return [...byId.values()];
+export function listImportedLocal(): Finding[] {
+  return [...importedLocal];
+}
+
+export function clearImportedLocal(): void {
+  importedLocal = [];
+}
+
+/**
+ * Multi-surface demo + manuals + guided + cloud directed + local imports.
+ * Manual/cloud/local imports survive demo reload.
+ */
+export function runDemoScan(): Finding[] {
+  return mergeFindings(
+    DEMO_FINDINGS.map(normalizeFinding),
+    listManualAgents(),
+    listGuidedFindings(),
+    listCloudDirected(),
+    importedLocal,
+  );
 }

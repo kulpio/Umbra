@@ -548,3 +548,28 @@ code {
   margin-right: 0.75rem;
   font-size: 0.88rem;
 }
+
+.file-btn {
+  display: inline-flex;
+  align-items: center;
+  min-height: 42px;
+  padding: 0.55rem 0.9rem;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--elev);
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.cloud-note {
+  display: block;
+  width: min(100%, 20rem);
+  margin: 0.35rem 0;
+  font: inherit;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0.35rem 0.5rem;
+}

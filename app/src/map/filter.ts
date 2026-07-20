@@ -33,7 +33,7 @@ export function visibleFindings(
     }
     if (q) {
       const hay =
-        `${f.party} ${f.title} ${f.summary} ${f.kind} ${f.ecosystem} ${f.howKnown}`.toLowerCase();
+        `${f.party} ${f.title} ${f.summary} ${f.kind} ${f.ecosystem ?? ""} ${f.howKnown ?? ""}`.toLowerCase();
       if (!hay.includes(q)) return false;
     }
     return true;

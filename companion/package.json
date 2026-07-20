@@ -1,0 +1,17 @@
+{
+  "name": "umbra-companion",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "scan": "tsx src/cli.ts scan",
+    "serve": "tsx src/cli.ts serve",
+    "test": "tsx --test src/**/*.test.ts",
+    "build": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.5",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3"
+  }
+}

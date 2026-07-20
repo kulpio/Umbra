@@ -23,10 +23,13 @@ Open http://localhost:5173 → **Load demo map**.
 - Search, session dismiss, copy summary (includes ecosystem)  
 - **Sources**
   - Demo data  
-  - **Agent registry** (manual, session memory — refresh clears)  
-  - Guided Apple & device (external links + mark reviewed)  
-  - Guided Location  
+  - **This Mac (companion)** — pull `127.0.0.1:8787/scan` or import JSON (`howKnown: local_scan`)  
+  - **Directed cloud** — mark AI cloud surfaces in use (`cloud_directed`)  
+  - **Agent registry** (manual, session memory)  
+  - Guided Apple & device / Location  
   - Gmail archaeology (optional / parked)  
+
+Companion: `../companion` — see that README.
 
 Manual agents **survive demo reload**; clear only via **Clear registry**. Page refresh loses manuals (no localStorage).
 

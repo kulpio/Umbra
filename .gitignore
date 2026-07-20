@@ -19,3 +19,6 @@ data/
 secrets/
 form-endpoint.local.js
 app/dist/
+
+companion/node_modules/
+companion/umbra-local-scan.json
