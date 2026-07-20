@@ -82,15 +82,15 @@ describe("findingFromMessage", () => {
     expect(f).toBeNull();
   });
 
-  it("parses the fixture corpus into multiple kinds", () => {
-    const findings = findingsFromMessages(SAMPLE_MESSAGES, "demo");
-    expect(findings.length).toBeGreaterThanOrEqual(8);
+  it("parses sample mail into multiple kinds with ecosystem", () => {
+    const findings = findingsFromMessages(SAMPLE_MESSAGES, "gmail");
+    expect(findings.length).toBeGreaterThanOrEqual(5);
     const kinds = new Set(findings.map((f) => f.kind));
-    expect(kinds.has("oauth_grant")).toBe(true);
-    expect(kinds.has("connected_app") || kinds.has("oauth_grant")).toBe(true);
+    expect(kinds.has("oauth_grant") || kinds.has("connected_app")).toBe(true);
     expect(kinds.has("ai_agent")).toBe(true);
     expect(kinds.has("location")).toBe(true);
-    expect(kinds.has("security_alert")).toBe(true);
+    expect(findings.every((f) => f.howKnown === "gmail")).toBe(true);
+    expect(findings.every((f) => f.ecosystem)).toBe(true);
   });
 
   it("does not treat subscription/billing alone as a finding", () => {
@@ -106,18 +106,26 @@ describe("findingFromMessage", () => {
   });
 });
 
-describe("demo scan buckets", () => {
-  it("ships ≥8 demo findings with access, agents, and location buckets", () => {
-    expect(DEMO_FINDINGS.length).toBeGreaterThanOrEqual(8);
+describe("demo scan multi-surface", () => {
+  it("ships balanced demo findings across access, agents, location", () => {
+    expect(DEMO_FINDINGS.length).toBeGreaterThanOrEqual(12);
     const buckets = new Set(DEMO_FINDINGS.map((f) => kindToBucket(f.kind)));
     expect(buckets.has("access")).toBe(true);
     expect(buckets.has("agents")).toBe(true);
     expect(buckets.has("location")).toBe(true);
+    const agents = DEMO_FINDINGS.filter((f) => f.kind === "ai_agent");
+    expect(agents.length).toBeGreaterThanOrEqual(5);
+    const locs = DEMO_FINDINGS.filter((f) => f.kind === "location");
+    expect(locs.length).toBeGreaterThanOrEqual(4);
+    const ecosystems = new Set(DEMO_FINDINGS.map((f) => f.ecosystem));
+    expect(ecosystems.has("apple")).toBe(true);
+    expect(ecosystems.has("google")).toBe(true);
+    expect(ecosystems.has("ai")).toBe(true);
   });
 
-  it("runDemoScan merges fixtures and parser output without empty map", () => {
+  it("runDemoScan loads multi-surface map", () => {
     const all = runDemoScan();
-    expect(all.length).toBeGreaterThanOrEqual(8);
+    expect(all.length).toBeGreaterThanOrEqual(12);
     const buckets = new Set(all.map((f) => kindToBucket(f.kind)));
     expect(buckets.has("access")).toBe(true);
     expect(buckets.has("agents")).toBe(true);

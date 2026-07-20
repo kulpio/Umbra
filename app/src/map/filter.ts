@@ -9,7 +9,6 @@ const CONF_RANK: Record<Confidence, number> = {
   low: 1,
 };
 
-/** Session-memory dismiss set (caller owns the Set — never persist). */
 export function isDismissed(
   dismissed: ReadonlySet<string>,
   id: string,
@@ -17,9 +16,6 @@ export function isDismissed(
   return dismissed.has(id);
 }
 
-/**
- * Visible findings: apply dismiss (unless showDismissed), bucket filter, search, sort.
- */
 export function visibleFindings(
   findings: readonly Finding[],
   opts: {
@@ -30,13 +26,14 @@ export function visibleFindings(
   },
 ): Finding[] {
   const q = opts.search.trim().toLowerCase();
-  let list = findings.filter((f) => {
+  const list = findings.filter((f) => {
     if (!opts.showDismissed && opts.dismissed.has(f.id)) return false;
     if (opts.filter !== "all" && kindToBucket(f.kind) !== opts.filter) {
       return false;
     }
     if (q) {
-      const hay = `${f.party} ${f.title} ${f.summary} ${f.kind}`.toLowerCase();
+      const hay =
+        `${f.party} ${f.title} ${f.summary} ${f.kind} ${f.ecosystem} ${f.howKnown}`.toLowerCase();
       if (!hay.includes(q)) return false;
     }
     return true;
@@ -44,7 +41,6 @@ export function visibleFindings(
   return sortFindings(list);
 }
 
-/** Newest evidenceDate first, then higher confidence, then title. */
 export function sortFindings(findings: readonly Finding[]): Finding[] {
   return [...findings].sort((a, b) => {
     const da = a.evidenceDate || "";
@@ -57,7 +53,6 @@ export function sortFindings(findings: readonly Finding[]): Finding[] {
   });
 }
 
-/** Counts per bucket for non-dismissed findings that match search (ignore bucket filter). */
 export function bucketCountsForChips(
   findings: readonly Finding[],
   opts: {
@@ -77,7 +72,8 @@ export function bucketCountsForChips(
   for (const f of findings) {
     if (!opts.showDismissed && opts.dismissed.has(f.id)) continue;
     if (q) {
-      const hay = `${f.party} ${f.title} ${f.summary} ${f.kind}`.toLowerCase();
+      const hay =
+        `${f.party} ${f.title} ${f.summary} ${f.kind} ${f.ecosystem}`.toLowerCase();
       if (!hay.includes(q)) continue;
     }
     counts.all++;
@@ -91,11 +87,12 @@ export type ExportRow = {
   party: string;
   title: string;
   confidence: string;
+  ecosystem: string;
+  howKnown: string;
   evidenceDate?: string;
   source: string;
 };
 
-/** Summary for clipboard — no raw email bodies. */
 export function exportMapSummary(
   findings: readonly Finding[],
   format: "json" | "text" = "text",
@@ -105,21 +102,27 @@ export function exportMapSummary(
     party: f.party,
     title: f.title,
     confidence: f.confidence,
+    ecosystem: f.ecosystem,
+    howKnown: f.howKnown,
     evidenceDate: f.evidenceDate,
     source: f.source,
   }));
   if (format === "json") {
-    return JSON.stringify({ exportedAt: new Date().toISOString(), findings: rows }, null, 2);
+    return JSON.stringify(
+      { exportedAt: new Date().toISOString(), findings: rows },
+      null,
+      2,
+    );
   }
   const lines = [
-    "Umbra permission map summary (no email bodies)",
+    "Umbra multi-surface permission map (no email bodies)",
     `Exported: ${new Date().toISOString()}`,
     `Count: ${rows.length}`,
     "",
   ];
   for (const r of rows) {
     lines.push(
-      `- [${r.kind}] ${r.party}: ${r.title} (${r.confidence}${r.evidenceDate ? `, ${r.evidenceDate}` : ""})`,
+      `- [${r.kind}/${r.ecosystem}] ${r.party}: ${r.title} (${r.confidence}, ${r.howKnown}${r.evidenceDate ? `, ${r.evidenceDate}` : ""})`,
     );
   }
   return lines.join("\n");

@@ -1,8 +1,9 @@
-# Umbra app — MVP v0 (permission map)
+# Umbra app — multi-surface permission map
 
-Read-only permission map: **demo fixtures** work with zero Google setup. Optional **live Gmail** scan uses `gmail.readonly` only; mail stays in the browser; token is memory-only.
+**Product:** standing permissions across **Access · Agents · Location** (Apple, Google, Microsoft, AI, device).  
+**Not** a Gmail-only scanner or subscription canceler.
 
-**Not** a subscription canceler. Positioning: access · AI agents · location.
+**Demo is the product** while Google OAuth is parked. Gmail archaeology is an optional *method* under Sources.
 
 ## Quick start
 
@@ -13,98 +14,45 @@ npm test
 npm run dev
 ```
 
-Open http://localhost:5173 → **Run demo scan**.
+Open http://localhost:5173 → **Load demo map**.
+
+## Demo map (primary)
+
+- Multi-ecosystem fixtures: SIWA, Microsoft consent, ≥5 AI agents, ≥4 location findings  
+- Filters with counts: All / Access / Agents / Location / Alerts  
+- Search, session dismiss, copy summary (includes ecosystem)  
+- **Sources**
+  - Demo data  
+  - **Agent registry** (manual, session memory — refresh clears)  
+  - Guided Apple & device (external links + mark reviewed)  
+  - Guided Location  
+  - Gmail archaeology (optional / parked)  
+
+Manual agents **survive demo reload**; clear only via **Clear registry**. Page refresh loses manuals (no localStorage).
+
+## Security bar
+
+| Rule | Behavior |
+|------|----------|
+| Token | Memory only if Gmail used |
+| Storage | No localStorage for tokens/mail/secrets |
+| Revoke | External allowlisted HTTPS only |
+| TCC | Never claimed from web app |
+| Server | No mail honeypot |
+
+## Optional live Gmail
+
+See below only if unparking OAuth — **Umbra GCP project only**, never Natandi.
 
 ```bash
-npm run build   # output: app/dist
-npm run preview
+# app/.env.local
+VITE_GOOGLE_CLIENT_ID=…
 ```
 
-Marketing waitlist site remains at repo root (GitHub Pages). This app is primarily **localhost** for v0.
-
-## Demo mode (product while Google is parked)
-
-- Button: **Demo scan** — no Google account, no client id
-- ≥8 curated findings + parser output (access · agents · location · alerts)
-- **Search** party/title; **filter chips** with live counts
-- **Dismiss / Not relevant** — session memory only (never localStorage); **Show dismissed** to restore; cleared on new scan and Disconnect
-- Sort: newest evidence date, then confidence
-- **Copy map summary** — clipboard text of *visible* rows (kind, party, title, confidence) — no email bodies
-- Detail: confidence explained; external manage/revoke only
-- Collapsed **debug** strip for live calibration counters (demo fills parsed count)
-- No network required
-
-## Live Gmail (optional)
-
-### Security model
-
-| Rule | v0 behavior |
-|---|---|
-| Scope | `gmail.readonly` (+ openid email for identity) |
-| Never | `mail.google.com/`, modify, send |
-| Token | **Memory only** — Disconnect clears it |
-| Storage | No localStorage / IndexedDB for tokens or mail |
-| Server | No Umbra backend receives message bodies |
-| Revoke | Deep link only — we do not call revoke APIs |
-
-### Google Cloud (Testing mode) — **Umbra project only**
-
-**Hard rule:** create a **new** Google Cloud project named **Umbra**.  
-Do **not** reuse Natandi, SynergyApp, Boreal, or any other existing GCP project. Wrong project = wrong OAuth client and cross-product mess.
-
-1. Open **Create project**: https://console.cloud.google.com/projectcreate  
-   - Project name: `Umbra`  
-   - Confirm the top bar project picker says **Umbra** (not Natandi) before any next step.  
-2. With **Umbra** selected → enable **Gmail API**:  
-   https://console.cloud.google.com/apis/library/gmail.googleapis.com  
-3. **OAuth consent screen**: External → **Testing**.  
-4. Scopes: only `https://www.googleapis.com/auth/gmail.readonly` (openid/email OK if wizard adds them).  
-5. **Test users**: add your Gmail.  
-6. **Credentials → Create OAuth client ID → Web application**  
-   - Name: `Umbra local`  
-   - Authorized JavaScript origins: `http://localhost:5173` and `http://127.0.0.1:5173`  
-7. Copy **that** client’s ID into env (Umbra app only — never into Natandi repos):
-
-```bash
-cd /Users/dylandemnard/Personal/Projects/Umbra/app
-cp .env.example .env.local
-# edit app/.env.local only:
-# VITE_GOOGLE_CLIENT_ID=xxxxx.apps.googleusercontent.com
-```
-
-8. Restart `npm run dev` from **Umbra/app**. **Connect Google** → **Live Gmail scan**.
-
-Without `VITE_GOOGLE_CLIENT_ID`, Connect stays disabled. Demo still works.
-
-**Isolation checklist**
-
-| | Umbra | Natandi |
-|--|-------|---------|
-| Code | `Personal/Projects/Umbra` | `Personal/Projects/SynergyApp` |
-| GCP project | **Umbra** (new) | whatever Natandi already uses |
-| `.env.local` | `Umbra/app/.env.local` | Natandi env files only |
-| OAuth client name | `Umbra local` | never share clients |
-### Production verification
-
-Not in v0. Stay on Testing + ≤100 test users until CASA/verification is planned (see vault research).
+Live path: metadata prefilter then full body; debug strip counters.
 
 ## Tests
 
 ```bash
-npm test
-```
-
-Parser rules: OAuth grants, connected apps, AI agents, location, security alerts. Billing-only mail must not match.
-
-## Layout
-
-```
-src/
-  model/findings.ts
-  demo/fixtures.ts
-  parse/          # patterns + fromMessage + tests
-  auth/google.ts  # GIS token client, memory token
-  gmail/          # list/get + queries
-  scan/           # runDemo / runLive
-  main.ts         # UI
+npm test && npm run build
 ```

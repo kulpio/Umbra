@@ -13,6 +13,8 @@ function f(
   return {
     summary: "s",
     source: "demo",
+    howKnown: "demo",
+    ecosystem: "google",
     confidence: "medium",
     ...partial,
   };
@@ -26,6 +28,7 @@ const sample: Finding[] = [
     party: "Notion",
     confidence: "high",
     evidenceDate: "2024-01-01",
+    ecosystem: "google",
   }),
   f({
     id: "2",
@@ -34,6 +37,8 @@ const sample: Finding[] = [
     party: "OpenAI",
     confidence: "medium",
     evidenceDate: "2025-06-01",
+    ecosystem: "ai",
+    howKnown: "manual",
   }),
   f({
     id: "3",
@@ -42,6 +47,7 @@ const sample: Finding[] = [
     party: "Google Maps",
     confidence: "low",
     evidenceDate: "2023-01-01",
+    ecosystem: "google",
   }),
   f({
     id: "4",
@@ -86,22 +92,28 @@ describe("visibleFindings", () => {
     expect(list[0].party).toBe("OpenAI");
   });
 
-  it("searches party and title", () => {
+  it("searches ecosystem and party", () => {
     const list = visibleFindings(sample, {
+      dismissed: new Set(),
+      showDismissed: false,
+      filter: "all",
+      search: "apple",
+    });
+    // none apple in sample
+    expect(list).toHaveLength(0);
+    const notion = visibleFindings(sample, {
       dismissed: new Set(),
       showDismissed: false,
       filter: "all",
       search: "notion",
     });
-    expect(list).toHaveLength(1);
-    expect(list[0].id).toBe("1");
+    expect(notion).toHaveLength(1);
   });
 });
 
 describe("sortFindings", () => {
   it("sorts newest date first, then confidence", () => {
     const sorted = sortFindings(sample);
-    // 2025-06-01 high (4) before 2025-06-01 medium (2)
     expect(sorted[0].id).toBe("4");
     expect(sorted[1].id).toBe("2");
     expect(sorted[2].id).toBe("1");
@@ -125,16 +137,17 @@ describe("bucketCountsForChips", () => {
 });
 
 describe("exportMapSummary", () => {
-  it("exports text without bodies", () => {
+  it("exports text with ecosystem", () => {
     const text = exportMapSummary(sample.slice(0, 1), "text");
     expect(text).toContain("Notion");
+    expect(text).toContain("google");
     expect(text).not.toContain("rawSubject");
-    expect(text).toContain("oauth_grant");
   });
 
-  it("exports json rows", () => {
-    const j = JSON.parse(exportMapSummary(sample.slice(0, 1), "json"));
-    expect(j.findings[0].party).toBe("Notion");
+  it("exports json rows with ecosystem", () => {
+    const j = JSON.parse(exportMapSummary(sample.slice(0, 2), "json"));
+    expect(j.findings[0].ecosystem).toBe("google");
+    expect(j.findings[1].howKnown).toBe("manual");
     expect(j.findings[0].body).toBeUndefined();
   });
 });

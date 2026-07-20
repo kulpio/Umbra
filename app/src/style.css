@@ -420,3 +420,131 @@ code {
   clip: rect(0, 0, 0, 0);
   border: 0;
 }
+
+.hero-line {
+  margin: 0.4rem 0 0.25rem;
+  font-size: 1.02rem;
+  max-width: 40rem;
+  color: var(--text);
+}
+
+.sources {
+  margin-bottom: 1rem;
+}
+
+.src-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  padding: 0.65rem 1rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.src-tab {
+  font-size: 0.82rem;
+  min-height: 36px;
+  padding: 0.35rem 0.65rem;
+}
+
+.src-tab small {
+  opacity: 0.7;
+  font-size: 0.75em;
+}
+
+.src-tab.active {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.src-body {
+  padding: 0.85rem 1rem 1rem;
+}
+
+.pillar-intro {
+  font-size: 0.85rem;
+  color: var(--muted);
+  padding: 0.65rem 1rem;
+  border-bottom: 1px solid var(--line);
+  background: color-mix(in srgb, var(--accent) 4%, transparent);
+}
+
+.eco {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+}
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0 0 0.75rem;
+}
+
+.agent-form {
+  display: grid;
+  gap: 0.65rem;
+  max-width: 28rem;
+}
+
+.agent-form label {
+  display: grid;
+  gap: 0.25rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.agent-form input,
+.agent-form textarea {
+  font: inherit;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0.45rem 0.6rem;
+}
+
+.tags {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.75rem;
+}
+
+.tags legend {
+  padding: 0 0.25rem;
+  font-size: 0.8rem;
+}
+
+.actions-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.guided-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.guided-list li {
+  border-top: 1px solid var(--line);
+  padding: 0.75rem 0;
+}
+
+.guided-list p {
+  margin: 0.35rem 0;
+  font-size: 0.88rem;
+  color: var(--muted);
+}
+
+.guided-list a {
+  margin-right: 0.75rem;
+  font-size: 0.88rem;
+}

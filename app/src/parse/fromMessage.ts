@@ -1,4 +1,9 @@
-import type { Finding, FindingSource } from "../model/findings";
+import type {
+  Ecosystem,
+  Finding,
+  FindingSource,
+  HowKnown,
+} from "../model/findings";
 import { defaultRevokeUrl, safeRevokeUrl } from "../model/findings";
 import type { SampleMessage } from "../demo/fixtures";
 import { RULES } from "./patterns";
@@ -14,7 +19,21 @@ function extractParty(
   return fallback;
 }
 
-/** Parse a single Gmail-like message into zero or one finding. */
+function ecosystemFromText(text: string, kind: string): Ecosystem {
+  if (/apple|icloud|sign in with apple/i.test(text)) return "apple";
+  if (/microsoft|outlook|copilot|azure|live\.com/i.test(text)) return "microsoft";
+  if (/openai|chatgpt|claude|anthropic|cursor|perplexity|ai agent|ai assistant/i.test(text))
+    return "ai";
+  if (/uber|lyft|browser extension/i.test(text)) return "other";
+  if (kind === "ai_agent") return "ai";
+  if (kind === "location" && /maps|google/i.test(text)) return "google";
+  return "google";
+}
+
+function howKnownFromSource(source: FindingSource): HowKnown {
+  return source === "gmail" ? "gmail" : "demo";
+}
+
 export function findingFromMessage(
   msg: SampleMessage,
   source: FindingSource = "gmail",
@@ -23,7 +42,9 @@ export function findingFromMessage(
   for (const rule of RULES) {
     if (!rule.test.test(hay)) continue;
     const party = extractParty(hay, rule.partyFrom, rule.defaultParty);
-    const revoke = safeRevokeUrl(defaultRevokeUrl(rule.kind));
+    const ecosystem = ecosystemFromText(hay, rule.kind);
+    const howKnown = howKnownFromSource(source);
+    const revoke = safeRevokeUrl(defaultRevokeUrl(rule.kind, ecosystem));
     return {
       id: `${source}-${msg.id}-${rule.id}`,
       kind: rule.kind,
@@ -32,6 +53,8 @@ export function findingFromMessage(
       summary: rule.summary(party),
       evidenceDate: msg.date,
       source,
+      howKnown,
+      ecosystem,
       confidence: rule.confidence,
       revokeUrl: revoke,
       rawSubject: msg.subject,
