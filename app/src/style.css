@@ -332,3 +332,91 @@ code {
   font-size: 0.8rem;
   color: var(--muted);
 }
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.65rem 1rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.search-label {
+  flex: 1;
+  min-width: 12rem;
+}
+
+.search-label input {
+  width: 100%;
+  min-height: 40px;
+  padding: 0.45rem 0.7rem;
+  font: inherit;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.search-label input:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.check {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.chip-n {
+  opacity: 0.75;
+  font-size: 0.8em;
+}
+
+.list button.row.dismissed-row {
+  opacity: 0.55;
+}
+
+.detail-actions {
+  margin-bottom: 0.75rem;
+}
+
+.debug {
+  margin-bottom: 0.85rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+  border: 1px dashed var(--line);
+  border-radius: 8px;
+  padding: 0.4rem 0.75rem;
+}
+
+.debug summary {
+  cursor: pointer;
+  color: var(--text);
+}
+
+.debug ul {
+  margin: 0.5rem 0;
+  padding-left: 1.2rem;
+}
+
+.flash {
+  margin: 0 0 0.75rem;
+  font-size: 0.88rem;
+  color: var(--ok);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}

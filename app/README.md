@@ -22,12 +22,16 @@ npm run preview
 
 Marketing waitlist site remains at repo root (GitHub Pages). This app is primarily **localhost** for v0.
 
-## Demo mode
+## Demo mode (product while Google is parked)
 
-- Button: **Run demo scan**
-- Loads ≥8 curated findings + parser output from sample messages
-- Filters: All / Access / Agents / Location / Alerts
-- Detail panel + **Revoke / manage externally** (Google permissions URL etc.)
+- Button: **Demo scan** — no Google account, no client id
+- ≥8 curated findings + parser output (access · agents · location · alerts)
+- **Search** party/title; **filter chips** with live counts
+- **Dismiss / Not relevant** — session memory only (never localStorage); **Show dismissed** to restore; cleared on new scan and Disconnect
+- Sort: newest evidence date, then confidence
+- **Copy map summary** — clipboard text of *visible* rows (kind, party, title, confidence) — no email bodies
+- Detail: confidence explained; external manage/revoke only
+- Collapsed **debug** strip for live calibration counters (demo fills parsed count)
 - No network required
 
 ## Live Gmail (optional)
