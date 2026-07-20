@@ -37,5 +37,7 @@ Angles: `?v=access` (default) · `agents` · `location`
 
 ## Docs / vault
 
-Product plan: DigitalBrain `Umbra/Product/MVP-v0.md`  
-Positioning: `Product/Positioning-lock.md`
+**AI team handoff (single file):**  
+`/Users/dylandemnard/DigitalBrain/Umbra/Product/TEAM-HANDOFF-NOW.md`  
+
+(Deep dives are linked from that file — do not start from older research rounds.)
