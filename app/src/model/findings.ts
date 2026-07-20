@@ -185,7 +185,7 @@ export function ecosystemLabel(e: Ecosystem): string {
   }
 }
 
-export function howKnownLabel(h: HowKnown): string {
+export function howKnownLabel(h: HowKnown | string | undefined | null): string {
   switch (h) {
     case "demo":
       return "Demo fixture";
@@ -199,6 +199,8 @@ export function howKnownLabel(h: HowKnown): string {
       return "This Mac (companion scan)";
     case "cloud_directed":
       return "Directed cloud (you pointed)";
+    default:
+      return "Unknown source";
   }
 }
 

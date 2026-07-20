@@ -40,4 +40,35 @@ describe("parseImportPayload", () => {
     expect(list).toHaveLength(1);
     expect(list[0].howKnown).toBe("local_scan");
   });
+
+  it("drops rows with invalid kind and defaults bad enums", () => {
+    const list = parseImportPayload({
+      findings: [
+        {
+          id: "bad-kind",
+          kind: "not_a_kind",
+          title: "X",
+          party: "Y",
+          summary: "z",
+        },
+        {
+          id: "ok-defaults",
+          kind: "ai_agent",
+          title: "Agent",
+          party: "Tool",
+          summary: "s",
+          howKnown: "zzz",
+          ecosystem: "nope",
+          confidence: "banana",
+          source: "weird",
+        },
+      ],
+    });
+    expect(list).toHaveLength(1);
+    expect(list[0].id).toBe("ok-defaults");
+    expect(list[0].howKnown).toBe("local_scan");
+    expect(list[0].ecosystem).toBe("other");
+    expect(list[0].confidence).toBe("medium");
+    expect(list[0].source).toBe("demo");
+  });
 });

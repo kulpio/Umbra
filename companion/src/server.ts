@@ -1,5 +1,6 @@
 import http from "node:http";
 import type { AddressInfo } from "node:net";
+import { isAllowedLoopbackHost } from "./host.js";
 import { runLocalScan } from "./scan.js";
 
 const ALLOWED_ORIGINS = new Set([
@@ -18,11 +19,27 @@ function cors(req: http.IncomingMessage, res: http.ServerResponse): void {
 }
 
 /**
- * Bind 127.0.0.1 only. Reject non-loopback (host already forces loopback).
+ * Bind 127.0.0.1 only + reject bad Host (DNS rebinding).
  */
 export function startServer(port = 8787): http.Server {
   const server = http.createServer((req, res) => {
     cors(req, res);
+
+    // Resolve bound port for Host checks (may differ if 0 was passed)
+    const addr = server.address();
+    const boundPort =
+      addr && typeof addr === "object" ? addr.port : port;
+
+    if (!isAllowedLoopbackHost(req.headers.host, boundPort)) {
+      res.writeHead(400, { "Content-Type": "application/json" });
+      res.end(
+        JSON.stringify({
+          error: "invalid host",
+          detail: "Host must be 127.0.0.1 or localhost with this server port",
+        }),
+      );
+      return;
+    }
 
     if (req.method === "OPTIONS") {
       res.writeHead(204);
@@ -59,9 +76,9 @@ export function startServer(port = 8787): http.Server {
   });
 
   server.listen(port, "127.0.0.1", () => {
-    const addr = server.address() as AddressInfo;
+    const a = server.address() as AddressInfo;
     console.log(
-      `Umbra companion listening on http://127.0.0.1:${addr.port} (loopback only)`,
+      `Umbra companion listening on http://127.0.0.1:${a.port} (loopback only; Host must match)`,
     );
     console.log("  GET /health  GET /scan");
   });
